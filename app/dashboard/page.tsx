@@ -9,10 +9,11 @@ export default async function DashboardPage() {
   const supabase = createClient()
 
   // Fetch all interviews for metrics
-  const { data: interviews = [] } = await supabase
+  const { data: interviewsRaw } = await supabase
     .from('interviews')
     .select('id, status, pipeline_status, applied_role, engagement_score, ai_fit_score, created_at, candidate:candidates(full_name, email)')
     .order('created_at', { ascending: false })
+  const interviews = interviewsRaw ?? []
 
   // Calculate metrics
   const totalInterviews = interviews.length
@@ -62,11 +63,12 @@ export default async function DashboardPage() {
   })
 
   // Recent interviews (last 10) — fetch with candidate join
-  const { data: recentInterviews = [] } = await supabase
+  const { data: recentInterviewsRaw } = await supabase
     .from('interviews')
     .select('*, candidate:candidates(full_name, email)')
     .order('created_at', { ascending: false })
     .limit(10)
+  const recentInterviews = recentInterviewsRaw ?? []
 
   return (
     <div className="space-y-6">
