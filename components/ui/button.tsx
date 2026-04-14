@@ -14,12 +14,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled}
         className={cn(
           'inline-flex items-center justify-center font-medium transition-colors',
-          'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-1',
           'disabled:pointer-events-none disabled:opacity-50',
           {
-            'bg-white text-black hover:bg-white/90': variant === 'primary',
+            'bg-accent text-white hover:bg-accent/90': variant === 'primary',
             'border border-border bg-transparent text-foreground hover:bg-card-hover': variant === 'secondary',
-            'bg-transparent text-destructive hover:bg-destructive/10': variant === 'destructive',
+            'bg-transparent text-destructive hover:bg-destructive-bg': variant === 'destructive',
             'bg-transparent text-foreground hover:bg-card-hover': variant === 'ghost',
           },
           {
