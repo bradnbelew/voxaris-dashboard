@@ -1,17 +1,25 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getOrgId } from '@/lib/supabase/get-org-id'
 import { MetricsRow } from '@/components/dashboard/MetricsRow'
 import { RecentInterviews } from '@/components/dashboard/RecentInterviews'
 import { RoleChart } from '@/components/dashboard/RoleChart'
 import { VolumeChart } from '@/components/dashboard/VolumeChart'
 import { format, subDays, startOfDay, isToday } from 'date-fns'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
+  const orgId = await getOrgId()
+  if (!orgId) redirect('/login')
+
   const supabase = createClient()
 
-  // Fetch all interviews for metrics
+  // Fetch all interviews scoped to this org
   const { data: interviewsRaw } = await supabase
     .from('interviews')
     .select('id, status, pipeline_status, applied_role, engagement_score, ai_fit_score, created_at, candidate:candidates(full_name, email)')
+    .eq('organization_id', orgId)
     .order('created_at', { ascending: false })
   const interviews = interviewsRaw ?? []
 
@@ -62,10 +70,11 @@ export default async function DashboardPage() {
     return { date: dateStr, count }
   })
 
-  // Recent interviews (last 10) — fetch with candidate join
+  // Recent interviews (last 10) scoped to this org
   const { data: recentInterviewsRaw } = await supabase
     .from('interviews')
     .select('*, candidate:candidates(full_name, email)')
+    .eq('organization_id', orgId)
     .order('created_at', { ascending: false })
     .limit(10)
   const recentInterviews = recentInterviewsRaw ?? []
