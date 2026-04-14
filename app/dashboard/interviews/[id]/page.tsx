@@ -1,10 +1,6 @@
-'use server'
-
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
-import { formatDateTime, formatDate } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
 import { PipelineActions } from '@/components/interview-detail/PipelineActions'
 import { ScoreCards } from '@/components/interview-detail/ScoreCards'
 import { AISummary } from '@/components/interview-detail/AISummary'
