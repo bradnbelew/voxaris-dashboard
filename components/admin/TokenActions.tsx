@@ -42,12 +42,13 @@ export function TokenActions({ tokenId, initialActive }: TokenActionsProps) {
   return (
     <div className="flex items-center gap-3">
       <span
-        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
           active
-            ? 'bg-green-500/10 text-green-400'
-            : 'bg-muted/10 text-muted'
+            ? 'bg-success-bg text-success'
+            : 'bg-card-hover text-muted'
         }`}
       >
+        <span className={`h-1.5 w-1.5 rounded-full ${active ? 'bg-success' : 'bg-muted'}`} />
         {active ? 'Active' : 'Inactive'}
       </span>
       <button

@@ -111,7 +111,7 @@ export default async function AdminClientsPage() {
                     <div className="flex items-center justify-end gap-3">
                       {org.primary_token && (
                         <CopyLinkButton
-                          url={`${agentBaseUrl}?token=${org.primary_token}`}
+                          url={`${agentBaseUrl}/staffing?client=${org.primary_token}`}
                           label="Copy Link"
                         />
                       )}
