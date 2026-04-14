@@ -12,7 +12,7 @@ export interface Profile {
   organization_id: string
   full_name: string | null
   avatar_url: string | null
-  role: 'admin' | 'recruiter' | 'viewer'
+  role: 'admin' | 'recruiter' | 'viewer' | 'super_admin'
   created_at: string
   updated_at: string
 }
