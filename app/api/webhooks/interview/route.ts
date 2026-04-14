@@ -71,9 +71,9 @@ async function handleInterviewStarted(
 ) {
   const candidateData = {
     organization_id: organizationId,
-    full_name: (data.full_name as string) || 'Unknown',
-    email: data.email as string | undefined,
-    phone: data.phone as string | undefined,
+    full_name: (data.candidate_name as string) || (data.full_name as string) || 'Unknown',
+    email: (data.candidate_email as string) || (data.email as string) || undefined,
+    phone: (data.candidate_phone as string) || (data.phone as string) || undefined,
     resume_text: data.resume_text as string | undefined,
   }
 

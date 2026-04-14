@@ -96,7 +96,7 @@ export default function NewClientPage() {
               </code>
               <button
                 onClick={handleCopy}
-                className="shrink-0 rounded border border-border bg-card px-3 py-2 text-xs font-medium text-foreground hover:bg-muted/10 transition-colors"
+                className="shrink-0 rounded-lg border border-border bg-background px-3 py-2 text-xs font-medium text-foreground hover:bg-card-hover transition-colors"
               >
                 {copied ? 'Copied!' : 'Copy'}
               </button>
@@ -122,7 +122,7 @@ export default function NewClientPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={handleReset}
-            className="rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90 transition-opacity"
+            className="rounded-lg bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent/90 transition-colors"
           >
             Onboard Another
           </button>
@@ -156,7 +156,7 @@ export default function NewClientPage() {
               onChange={(e) => setCompanyName(e.target.value)}
               required
               placeholder="Acme Staffing Inc."
-              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-white"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
             />
           </div>
 
@@ -167,7 +167,7 @@ export default function NewClientPage() {
               value={contactName}
               onChange={(e) => setContactName(e.target.value)}
               placeholder="Jane Smith"
-              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-white"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
             />
           </div>
 
@@ -181,7 +181,7 @@ export default function NewClientPage() {
               onChange={(e) => setContactEmail(e.target.value)}
               required
               placeholder="jane@acmestaffing.com"
-              className="w-full rounded border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-white"
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
             />
           </div>
 
@@ -193,7 +193,7 @@ export default function NewClientPage() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="rounded-lg bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Onboard Client'}
             </button>
