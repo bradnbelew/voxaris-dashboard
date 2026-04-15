@@ -64,6 +64,7 @@ export interface Interview {
   organization_id: string
   candidate_id: string
   conversation_id: string
+  role_id: string | null
   applied_role: string
   source: string
   status: InterviewStatus
@@ -122,6 +123,23 @@ export interface InterviewNote {
   content: string
   created_at: string
   author?: Profile
+}
+
+export interface Role {
+  id: string
+  organization_id: string
+  title: string
+  description: string | null
+  pay_range: string | null
+  shift: string | null
+  venue_type: string | null
+  behavioral_questions: string[]
+  must_haves: string[]
+  certifications_preferred: string[]
+  active: boolean
+  interview_count: number
+  created_at: string
+  updated_at: string
 }
 
 export interface WebhookPayload {

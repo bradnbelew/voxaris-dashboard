@@ -99,6 +99,35 @@ export default async function ClientDetailPage({ params }: PageProps) {
         </dl>
       </div>
 
+      {/* Brand & White-label */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
+        <h2 className="text-sm font-semibold text-foreground mb-4">Brand &amp; White-label</h2>
+        <dl className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <dt className="text-muted text-xs uppercase tracking-wider mb-1">Company Display Name</dt>
+            <dd className="text-foreground">{org.company_name || org.name}</dd>
+          </div>
+          <div>
+            <dt className="text-muted text-xs uppercase tracking-wider mb-1">Logo URL</dt>
+            <dd className="font-mono text-xs text-foreground break-all">{org.logo_url || '—'}</dd>
+          </div>
+          <div>
+            <dt className="text-muted text-xs uppercase tracking-wider mb-1">Accent Color</dt>
+            <dd className="flex items-center gap-2">
+              <span
+                className="inline-block h-4 w-4 rounded-full border border-border-strong shrink-0"
+                style={{ backgroundColor: org.primary_color || '#ff6363' }}
+              />
+              <span className="font-mono text-xs text-foreground">{org.primary_color || '#ff6363'}</span>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-muted text-xs uppercase tracking-wider mb-1">Plan</dt>
+            <dd className="text-foreground capitalize">{org.plan || 'starter'}</dd>
+          </div>
+        </dl>
+      </div>
+
       {/* Client tokens */}
       <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">

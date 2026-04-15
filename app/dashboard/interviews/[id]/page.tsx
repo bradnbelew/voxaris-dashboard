@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
+import { VideoPlayer } from '@/components/interview-detail/VideoPlayer'
 import { PipelineActions } from '@/components/interview-detail/PipelineActions'
 import { ScoreCards } from '@/components/interview-detail/ScoreCards'
 import { AISummary } from '@/components/interview-detail/AISummary'
@@ -133,6 +134,7 @@ export default async function InterviewDetailPage({
 
         {/* Right col — AI summary + transcript + notes */}
         <div className="space-y-6 lg:col-span-2">
+          <VideoPlayer recordingUrl={interview.recording_url} candidateName={candidate?.full_name ?? 'Candidate'} />
           <AISummary
             summary={interview.ai_summary}
             strengths={interview.ai_strengths}
