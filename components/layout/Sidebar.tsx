@@ -23,24 +23,16 @@ function LogoMark() {
       <img
         src="/logo.png"
         alt="Voxaris AI"
-        className="h-14 w-auto object-contain object-left max-w-[200px]"
+        className="w-full h-auto object-contain object-left max-h-[100px]"
         onError={() => setImgFailed(true)}
       />
     )
   }
 
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-sm shrink-0">
-        <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
-          <path d="M2 11L7 3L12 11" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M4 8H10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <div>
-        <p className="text-base font-bold tracking-tight text-foreground leading-none">Voxaris AI</p>
-        <p className="text-[11px] text-muted mt-0.5">Hiring Intelligence</p>
-      </div>
+    <div className="flex flex-col gap-1">
+      <p className="text-xl font-bold tracking-tight text-foreground leading-none">Voxaris AI</p>
+      <p className="text-xs text-muted">Hiring Intelligence</p>
     </div>
   )
 }
@@ -61,9 +53,9 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-30 h-screen w-60 border-r border-border bg-white flex flex-col shadow-sm">
-      {/* Logo — taller header to give logo room */}
-      <div className="flex h-20 items-center px-5 border-b border-border">
+    <aside className="fixed left-0 top-0 z-30 h-screen w-64 border-r border-border bg-white flex flex-col shadow-sm">
+      {/* Logo */}
+      <div className="flex h-36 items-center px-5 border-b border-border">
         <LogoMark />
       </div>
 
