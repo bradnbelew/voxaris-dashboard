@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(toSet) {
+        setAll(toSet: { name: string; value: string; options: CookieOptions }[]) {
           // Capture cookies to apply to the redirect response
           cookiesToSet.push(...toSet)
         },
