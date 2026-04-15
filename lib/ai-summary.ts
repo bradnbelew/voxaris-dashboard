@@ -12,6 +12,7 @@ interface SummaryInput {
   available_weekends: boolean | null
   disqualified: boolean
   disqualification_reason: string | null
+  resume_text?: string | null
 }
 
 interface SummaryOutput {
@@ -47,7 +48,10 @@ CERTIFICATIONS: ${input.certifications?.join(', ') || 'None'}
 AVAILABILITY: Evenings: ${input.available_evenings ?? 'Unknown'}, Weekends: ${input.available_weekends ?? 'Unknown'}
 DISQUALIFIED: ${input.disqualified}${input.disqualification_reason ? ` (${input.disqualification_reason})` : ''}
 
-PERCEPTION DATA:
+${input.resume_text ? `RESUME (extracted from uploaded PDF):
+${input.resume_text.slice(0, 3000)}${input.resume_text.length > 3000 ? '\n[resume truncated for brevity]' : ''}
+
+` : ''}PERCEPTION DATA:
 ${JSON.stringify(input.perception_analysis, null, 2)}
 
 PERCEPTION SIGNALS:

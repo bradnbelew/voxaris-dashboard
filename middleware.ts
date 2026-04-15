@@ -34,8 +34,13 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Redirect unauthenticated users to login
-  if (!user && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/auth/')) {
+  // Redirect unauthenticated users to login (demo routes are public)
+  if (
+    !user &&
+    !request.nextUrl.pathname.startsWith('/login') &&
+    !request.nextUrl.pathname.startsWith('/auth/') &&
+    !request.nextUrl.pathname.startsWith('/demo')
+  ) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
@@ -54,6 +59,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|api/webhooks).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/webhooks|api/demo).*)',
   ],
 }

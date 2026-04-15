@@ -9,6 +9,7 @@ import { ScreeningData } from '@/components/interview-detail/ScreeningData'
 import { TranscriptView } from '@/components/interview-detail/TranscriptView'
 import { GuardrailEvents } from '@/components/interview-detail/GuardrailEvents'
 import { InterviewNotes } from '@/components/interview-detail/InterviewNotes'
+import { RecordingPlayer } from '@/components/interview-detail/RecordingPlayer'
 import {
   getStatusColor,
   getPipelineColor,
@@ -133,6 +134,8 @@ export default async function InterviewDetailPage({
 
         {/* Right col — AI summary + transcript + notes */}
         <div className="space-y-6 lg:col-span-2">
+          <RecordingPlayer recordingUrl={interview.recording_url} />
+
           <AISummary
             summary={interview.ai_summary}
             strengths={interview.ai_strengths}

@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { generateInterviewSummary } from '@/lib/ai-summary'
+import { sendNewApplicantEmail } from '@/lib/email'
 import { headers } from 'next/headers'
 
 const supabaseAdmin = createAdminClient()
@@ -219,11 +220,13 @@ async function handleConversationEnded(
 async function generateSummaryAsync(conversationId: string) {
   const { data: interview } = await supabaseAdmin
     .from('interviews')
-    .select('*')
+    .select('*, candidate:candidates(*)')
     .eq('conversation_id', conversationId)
     .single()
 
   if (!interview) return
+
+  const candidate = interview.candidate as Record<string, unknown> | null
 
   const summary = await generateInterviewSummary({
     applied_role: interview.applied_role,
@@ -237,6 +240,7 @@ async function generateSummaryAsync(conversationId: string) {
     available_weekends: interview.available_weekends,
     disqualified: interview.disqualified,
     disqualification_reason: interview.disqualification_reason,
+    resume_text: candidate?.resume_text as string | null | undefined,
   })
 
   if (!summary) return
@@ -255,7 +259,47 @@ async function generateSummaryAsync(conversationId: string) {
 
   if (error) {
     console.error('Failed to save AI summary:', error)
+    return
   }
+
+  // Send email notification to all org members (fire-and-forget)
+  notifyOrgMembers(interview, candidate, summary).catch((err) =>
+    console.error('Email notification failed:', err)
+  )
+}
+
+async function notifyOrgMembers(
+  interview: Record<string, unknown>,
+  candidate: Record<string, unknown> | null,
+  summary: { summary: string; fit_score: number; recommendation: string }
+) {
+  // Get all user IDs in this organization
+  const { data: profiles } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .eq('organization_id', interview.organization_id as string)
+
+  if (!profiles?.length) return
+
+  // Fetch email for each user via admin auth API
+  const emailResults = await Promise.all(
+    profiles.map((p) => supabaseAdmin.auth.admin.getUserById(p.id))
+  )
+
+  const emails = emailResults
+    .map((r) => r.data?.user?.email)
+    .filter((e): e is string => !!e)
+
+  if (!emails.length) return
+
+  await sendNewApplicantEmail(emails, {
+    candidateName: (candidate?.full_name as string) || 'Unknown Applicant',
+    appliedRole: interview.applied_role as string,
+    fitScore: summary.fit_score,
+    recommendation: summary.recommendation,
+    summaryExcerpt: summary.summary,
+    interviewId: interview.id as string,
+  })
 }
 
 async function handleTranscriptReady(
