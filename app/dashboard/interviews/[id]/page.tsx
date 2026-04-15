@@ -64,9 +64,9 @@ export default async function InterviewDetailPage({
     : 'General'
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 sm:px-8 py-6 space-y-6">
       {/* Back + Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <Link
             href="/dashboard/interviews"
