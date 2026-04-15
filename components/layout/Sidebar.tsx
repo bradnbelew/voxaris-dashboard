@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Inbox, Columns2, Briefcase, BarChart2, Settings, LogOut, List } from 'lucide-react'
@@ -32,17 +33,15 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
   return (
     <aside className="fixed left-0 top-0 z-30 h-screen w-60 border-r border-border bg-white flex flex-col shadow-sm">
       {/* Logo */}
-      <div className="flex h-14 items-center gap-3 px-5 border-b border-border">
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-sm">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-            <path d="M2 11L7 3L12 11" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M4 8H10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <span className="text-sm font-bold tracking-tight text-foreground">Voxaris</span>
-          <p className="text-[10px] text-muted leading-none mt-0.5">Hiring Intelligence</p>
-        </div>
+      <div className="flex h-16 items-center px-5 border-b border-border">
+        <Image
+          src="/logo.png"
+          alt="Voxaris AI"
+          width={148}
+          height={48}
+          className="object-contain object-left"
+          priority
+        />
       </div>
 
       {/* Nav */}

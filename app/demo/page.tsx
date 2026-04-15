@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
@@ -22,14 +23,15 @@ export default async function DemoPage({
     <div className="min-h-screen bg-slate-950 text-white flex flex-col">
       {/* Top bar */}
       <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-500">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 11L7 3L12 11" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M4 8H10" stroke="white" strokeWidth="1.6" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span className="text-sm font-semibold tracking-tight text-white">Voxaris</span>
+        <div className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="Voxaris AI"
+            width={130}
+            height={42}
+            className="object-contain brightness-0 invert"
+            priority
+          />
         </div>
         <span className="rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
           Live Demo
