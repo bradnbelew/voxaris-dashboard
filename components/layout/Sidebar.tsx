@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Inbox, Columns2, Briefcase, TrendingUp, Settings } from 'lucide-react'
+import { Inbox, Columns2, Briefcase, TrendingUp, Settings, LogOut } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Review', icon: Inbox, exact: true },
@@ -20,6 +20,13 @@ interface SidebarProps {
 
 export function Sidebar({ userName, orgName }: SidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleSignOut() {
+    await fetch('/api/auth/signout', { method: 'POST' })
+    router.push('/login')
+    router.refresh()
+  }
 
   return (
     <aside className="fixed left-0 top-0 z-30 h-screen w-60 border-r border-border bg-card flex flex-col">
@@ -60,10 +67,17 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
         <div className="h-7 w-7 rounded-full bg-accent text-white flex items-center justify-center text-xs font-semibold shrink-0">
           {userName ? userName.charAt(0).toUpperCase() : 'V'}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-medium text-foreground truncate">{userName ?? 'User'}</p>
           <p className="text-xs text-muted truncate">{orgName ?? ''}</p>
         </div>
+        <button
+          onClick={handleSignOut}
+          title="Sign out"
+          className="shrink-0 text-muted hover:text-foreground transition-colors"
+        >
+          <LogOut className="h-4 w-4" />
+        </button>
       </div>
     </aside>
   )

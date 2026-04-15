@@ -8,10 +8,12 @@ export default async function DemoPage({
 }: {
   searchParams: { error?: string }
 }) {
-  // If already authenticated, go straight to dashboard
+  // If already authenticated as the demo user, go straight to dashboard
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (user) redirect('/dashboard')
+  const demoEmail = process.env.DEMO_EMAIL
+  if (user && user.email === demoEmail) redirect('/dashboard')
+  const isLoggedInAsOther = !!(user && user.email !== demoEmail)
 
   const loginFailed = searchParams.error === 'login_failed'
   const demoConfigured = !!(process.env.DEMO_EMAIL && process.env.DEMO_PASSWORD)
@@ -98,7 +100,18 @@ export default async function DemoPage({
             </p>
           )}
 
-          {demoConfigured ? (
+          {isLoggedInAsOther && (
+            <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-300">
+              You're signed in as <span className="font-semibold">{user?.email}</span>.
+              <form action="/api/auth/signout?redirect=/demo" method="POST" className="mt-2">
+                <button type="submit" className="underline hover:no-underline text-amber-200">
+                  Sign out to access the demo →
+                </button>
+              </form>
+            </div>
+          )}
+
+          {demoConfigured && !isLoggedInAsOther ? (
             <form action="/api/demo/login" method="POST">
               <button
                 type="submit"
@@ -107,7 +120,7 @@ export default async function DemoPage({
                 Open Live Demo Dashboard →
               </button>
             </form>
-          ) : (
+          ) : !isLoggedInAsOther && (
             <div className="rounded-xl border border-white/10 bg-white/5 px-6 py-5 text-center">
               <p className="text-sm text-slate-400">
                 Demo not yet configured. Set{' '}
