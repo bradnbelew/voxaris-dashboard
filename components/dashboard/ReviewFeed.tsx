@@ -95,7 +95,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
       </div>
 
       {/* Feed */}
-      <div className="px-8 py-6 space-y-4 max-w-3xl mx-auto">
+      <div className="px-8 py-6 max-w-6xl mx-auto">
         {interviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <CheckCircle className="h-12 w-12 text-success mb-4" />
@@ -103,9 +103,10 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
             <p className="text-sm text-muted mt-2">No candidates pending review. Check back after your next interview runs.</p>
           </div>
         ) : (
-          interviews.map((interview) => {
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {interviews.map((interview) => {
             const candidate = interview.candidate
-            const name = candidate?.full_name ?? interview.candidate_name ?? 'Unknown'
+            const name = interview.full_name ?? candidate?.full_name ?? 'Unknown'
             const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
             const bestQuote = getBestQuote(interview.transcript)
             const isActioning = actioning === interview.id
@@ -135,7 +136,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
 
                 {/* AI Summary — hero text */}
                 {interview.ai_summary ? (
-                  <p className="text-sm leading-relaxed text-foreground">{interview.ai_summary}</p>
+                  <p className="text-sm leading-relaxed text-foreground line-clamp-3">{interview.ai_summary}</p>
                 ) : (
                   <p className="text-sm text-muted italic">AI summary will appear here once the interview is processed.</p>
                 )}
@@ -143,7 +144,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
                 {/* Best quote */}
                 {bestQuote && (
                   <blockquote className="rounded-lg bg-background border-l-4 border-accent px-4 py-3">
-                    <p className="text-sm text-muted italic">&ldquo;{bestQuote.slice(0, 200)}{bestQuote.length > 200 ? '...' : ''}&rdquo;</p>
+                    <p className="text-sm text-muted italic">&ldquo;{bestQuote.slice(0, 140)}{bestQuote.length > 140 ? '...' : ''}&rdquo;</p>
                   </blockquote>
                 )}
 
@@ -180,7 +181,8 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
                 </div>
               </div>
             )
-          })
+          })}
+          </div>
         )}
       </div>
 
