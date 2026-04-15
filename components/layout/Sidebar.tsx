@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Inbox, Columns2, Briefcase, TrendingUp, Settings, LogOut, List } from 'lucide-react'
+import { Inbox, Columns2, Briefcase, BarChart2, Settings, LogOut, List } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Review', icon: Inbox, exact: true },
   { href: '/dashboard/interviews', label: 'Interviews', icon: List },
   { href: '/dashboard/pipeline', label: 'Pipeline', icon: Columns2 },
   { href: '/dashboard/roles', label: 'Roles', icon: Briefcase },
-  { href: '/dashboard/proof', label: 'Proof', icon: TrendingUp },
+  { href: '/dashboard/proof', label: 'Analytics', icon: BarChart2 },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 

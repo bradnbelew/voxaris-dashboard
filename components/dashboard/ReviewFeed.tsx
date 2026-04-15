@@ -2,45 +2,55 @@
 
 import { useState } from 'react'
 import { CandidateDrawer } from './CandidateDrawer'
-import { Clock, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
+import { CheckCircle, CheckCheck, X } from 'lucide-react'
 
-function getInitialsColor(name: string): string {
-  const colors = ['bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-orange-500', 'bg-pink-500', 'bg-teal-500']
+function getAvatarGradient(name: string): string {
+  const gradients = [
+    'from-violet-500 to-indigo-500',
+    'from-fuchsia-500 to-purple-500',
+    'from-blue-500 to-cyan-500',
+    'from-emerald-500 to-teal-500',
+    'from-orange-500 to-amber-500',
+    'from-pink-500 to-rose-500',
+  ]
   let hash = 0
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash)
-  return colors[Math.abs(hash) % colors.length]
+  return gradients[Math.abs(hash) % gradients.length]
 }
 
-function FitBadge({ score }: { score: number | null }) {
-  if (score === null) return <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-gray-100 text-gray-500">No Score</span>
-  if (score >= 80) return <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-success-bg text-success">Fit Score: {score}</span>
-  if (score >= 60) return <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-warning-bg text-warning">Fit Score: {score}</span>
-  return <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-destructive-bg text-destructive">Fit Score: {score}</span>
+function getScoreAccent(score: number | null) {
+  if (score === null) return { bar: 'bg-border', text: 'text-muted', bg: '' }
+  if (score >= 80) return { bar: 'bg-emerald-500', text: 'text-emerald-600', bg: 'bg-emerald-50' }
+  if (score >= 60) return { bar: 'bg-amber-500', text: 'text-amber-600', bg: 'bg-amber-50' }
+  return { bar: 'bg-red-500', text: 'text-red-600', bg: 'bg-red-50' }
+}
+
+function RecPill({ rec }: { rec: string | null }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    strong_yes: { label: 'Strong Yes', cls: 'bg-emerald-100 text-emerald-700' },
+    yes:        { label: 'Yes',        cls: 'bg-emerald-50 text-emerald-600' },
+    maybe:      { label: 'Maybe',      cls: 'bg-amber-100 text-amber-700' },
+    no:         { label: 'No',         cls: 'bg-red-100 text-red-700' },
+  }
+  const { label, cls } = map[rec ?? ''] ?? { label: 'Pending', cls: 'bg-slate-100 text-slate-500' }
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${cls}`}>{label}</span>
 }
 
 function MiniBar({ label, value }: { label: string; value: number | null }) {
   const pct = value !== null ? Math.min(100, Math.max(0, value)) : 0
+  const color = pct >= 80 ? 'bg-emerald-500' : pct >= 60 ? 'bg-amber-400' : pct > 0 ? 'bg-red-400' : 'bg-border'
   return (
-    <div className="space-y-1 flex-1">
-      <div className="flex justify-between">
-        <span className="text-xs text-muted">{label}</span>
-        <span className="text-xs font-medium text-foreground">{value !== null ? value : '—'}</span>
+    <div className="flex-1">
+      <div className="flex justify-between mb-1">
+        <span className="text-[11px] text-muted">{label}</span>
+        <span className="text-[11px] font-semibold text-foreground">{value ?? '—'}</span>
       </div>
       <div className="h-1.5 rounded-full bg-border">
-        <div
-          className={`h-1.5 rounded-full transition-all ${pct >= 80 ? 'bg-success' : pct >= 60 ? 'bg-warning' : pct > 0 ? 'bg-destructive' : 'bg-border-strong'}`}
-          style={{ width: `${pct}%` }}
-        />
+        <div className={`h-1.5 rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
     </div>
   )
-}
-
-function getBestQuote(transcript: any[] | null): string | null {
-  if (!transcript || !Array.isArray(transcript)) return null
-  const userMessages = transcript.filter((m: any) => m.role === 'user' && typeof m.content === 'string' && m.content.length > 30)
-  if (userMessages.length === 0) return null
-  return userMessages.reduce((a: any, b: any) => a.content.length > b.content.length ? a : b).content
 }
 
 interface ReviewFeedProps {
@@ -52,11 +62,6 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
   const [drawerInterview, setDrawerInterview] = useState<any>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [actioning, setActioning] = useState<string | null>(null)
-
-  const avgScore = interviews.length > 0
-    ? Math.round(interviews.filter(i => i.ai_fit_score !== null).reduce((a, b) => a + (b.ai_fit_score ?? 0), 0) / (interviews.filter(i => i.ai_fit_score !== null).length || 1))
-    : 0
-  const timeSaved = (initial.length * 0.5).toFixed(1)
 
   async function handleAction(interviewId: string, status: 'shortlisted' | 'reviewed') {
     setActioning(interviewId)
@@ -72,117 +77,145 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
     }
   }
 
-  function openDrawer(interview: any) {
-    setDrawerInterview(interview)
-    setDrawerOpen(true)
-  }
+  // Sort highest score first
+  const sorted = [...interviews].sort((a, b) => (b.ai_fit_score ?? 0) - (a.ai_fit_score ?? 0))
 
   return (
     <>
-      {/* Status bar */}
-      <div className="flex items-center gap-6 px-8 py-3.5 border-b border-border bg-white sticky top-0 z-10">
-        <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-          <span className="text-sm font-medium text-foreground">{interviews.length} candidate{interviews.length !== 1 ? 's' : ''} to review</span>
-        </div>
-        {avgScore > 0 && (
-          <span className="text-sm text-muted">Avg score: <span className="font-semibold text-foreground">{avgScore}</span></span>
-        )}
-        <div className="flex items-center gap-1.5 text-sm text-success ml-auto">
-          <Clock className="h-4 w-4" />
-          <span>Saved <span className="font-semibold">{timeSaved} hrs</span> this week</span>
-        </div>
-      </div>
-
-      {/* Feed */}
-      <div className="px-8 py-6 max-w-6xl mx-auto">
-        {interviews.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <CheckCircle className="h-12 w-12 text-success mb-4" />
-            <h2 className="text-xl font-semibold text-foreground">You&apos;re all caught up</h2>
-            <p className="text-sm text-muted mt-2">No candidates pending review. Check back after your next interview runs.</p>
+      <div className="px-8 py-6 max-w-5xl mx-auto space-y-4">
+        {sorted.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white py-28 text-center">
+            <div className="h-14 w-14 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
+              <CheckCircle className="h-7 w-7 text-emerald-500" />
+            </div>
+            <h2 className="text-lg font-semibold text-foreground">All caught up</h2>
+            <p className="text-sm text-muted mt-1 max-w-xs">No candidates pending review. New interviews will appear here automatically.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {interviews.map((interview) => {
+          sorted.map((interview) => {
             const candidate = interview.candidate
             const name = interview.full_name ?? candidate?.full_name ?? 'Unknown'
             const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
-            const bestQuote = getBestQuote(interview.transcript)
+            const gradient = getAvatarGradient(name)
+            const score = interview.ai_fit_score
+            const accent = getScoreAccent(score)
             const isActioning = actioning === interview.id
+            const strengths: string[] = interview.ai_strengths ?? []
+            const concerns: string[] = interview.ai_concerns ?? []
 
             return (
-              <div key={interview.id} className="rounded-2xl border border-border bg-card shadow-sm p-6 space-y-4 transition-all hover:shadow-md">
-                {/* Header row */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-10 w-10 rounded-full ${getInitialsColor(name)} flex items-center justify-center text-sm font-bold text-white shrink-0`}>
-                      {initials}
+              <div key={interview.id} className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden transition-all hover:shadow-md">
+                {/* Score accent bar */}
+                <div className={`h-1 w-full ${accent.bar}`} />
+
+                <div className="p-6">
+                  <div className="flex gap-5">
+                    {/* Score + Avatar column */}
+                    <div className="flex flex-col items-center gap-2 shrink-0 w-14 pt-0.5">
+                      <div className={`h-11 w-11 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-sm font-bold text-white`}>
+                        {initials}
+                      </div>
+                      {score !== null && (
+                        <div className={`text-center`}>
+                          <div className={`text-2xl font-bold leading-none ${accent.text}`}>{score}</div>
+                          <div className="text-[9px] text-muted leading-tight">/100</div>
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <h3 className="text-base font-semibold text-foreground leading-tight">{name}</h3>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <FitBadge score={interview.ai_fit_score} />
+
+                    {/* Main content */}
+                    <div className="flex-1 min-w-0">
+                      {/* Name row */}
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2.5 flex-wrap">
+                            <h3 className="text-base font-semibold text-foreground leading-none">{name}</h3>
+                            <RecPill rec={interview.ai_recommendation} />
+                          </div>
+                          <div className="flex items-center gap-2 mt-1 text-sm text-muted">
+                            <span>{interview.applied_role ?? 'General'}</span>
+                            {interview.started_at && (
+                              <>
+                                <span className="text-border-strong">·</span>
+                                <span className="text-xs">
+                                  {new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </span>
+                              </>
+                            )}
+                            {interview.most_recent_employer && (
+                              <>
+                                <span className="text-border-strong">·</span>
+                                <span className="text-xs truncate max-w-[160px]">{interview.most_recent_employer}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
+                            className="text-xs text-muted hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-background transition-colors"
+                          >
+                            View Profile
+                          </button>
+                          <button
+                            onClick={() => handleAction(interview.id, 'reviewed')}
+                            disabled={isActioning}
+                            title="Archive"
+                            className="h-8 w-8 flex items-center justify-center rounded-lg border border-border text-muted hover:text-destructive hover:border-destructive/40 hover:bg-destructive-bg transition-colors disabled:opacity-50"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleAction(interview.id, 'shortlisted')}
+                            disabled={isActioning}
+                            className="flex items-center gap-1.5 text-xs font-semibold bg-accent text-white rounded-lg px-3 py-1.5 hover:bg-accent/90 transition-colors disabled:opacity-50"
+                          >
+                            <CheckCheck className="h-3.5 w-3.5" />
+                            {isActioning ? 'Saving…' : 'Shortlist'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* AI Summary */}
+                      {interview.ai_summary ? (
+                        <p className="mt-3 text-sm text-foreground/80 leading-relaxed line-clamp-2">
+                          {interview.ai_summary}
+                        </p>
+                      ) : (
+                        <p className="mt-3 text-sm text-muted italic">AI summary pending.</p>
+                      )}
+
+                      {/* Strengths + Concerns tags */}
+                      {(strengths.length > 0 || concerns.length > 0) && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {strengths.slice(0, 2).map((s, i) => (
+                            <span key={i} className="inline-flex items-center gap-1 text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-full px-2.5 py-0.5">
+                              <CheckCircle className="h-3 w-3 shrink-0" />
+                              <span className="truncate max-w-[220px]">{s}</span>
+                            </span>
+                          ))}
+                          {concerns.slice(0, 1).map((c, i) => (
+                            <span key={i} className="inline-flex items-center gap-1 text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-100 rounded-full px-2.5 py-0.5">
+                              <span className="truncate max-w-[220px]">{c}</span>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Score bars */}
+                      <div className="mt-4 flex gap-5">
+                        <MiniBar label="Engagement" value={interview.engagement_score} />
+                        <MiniBar label="Professional" value={interview.professional_score} />
+                        <MiniBar label="Fit Score" value={interview.ai_fit_score} />
                       </div>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-sm font-medium text-foreground">{interview.applied_role ?? 'General'}</p>
-                    <p className="text-xs text-muted mt-0.5">
-                      {interview.started_at ? new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-
-                {/* AI Summary — hero text */}
-                {interview.ai_summary ? (
-                  <p className="text-sm leading-relaxed text-foreground line-clamp-3">{interview.ai_summary}</p>
-                ) : (
-                  <p className="text-sm text-muted italic">AI summary will appear here once the interview is processed.</p>
-                )}
-
-                {/* Best quote */}
-                {bestQuote && (
-                  <blockquote className="rounded-lg bg-background border-l-4 border-accent px-4 py-3">
-                    <p className="text-sm text-muted italic">&ldquo;{bestQuote.slice(0, 140)}{bestQuote.length > 140 ? '...' : ''}&rdquo;</p>
-                  </blockquote>
-                )}
-
-                {/* Competency bars */}
-                <div className="flex gap-4">
-                  <MiniBar label="Engagement" value={interview.engagement_score} />
-                  <MiniBar label="Professional" value={interview.professional_score} />
-                  <MiniBar label="Fit Score" value={interview.ai_fit_score} />
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3 pt-2 border-t border-border">
-                  <button
-                    onClick={() => openDrawer(interview)}
-                    className="text-sm text-muted hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-background"
-                  >
-                    View Profile
-                  </button>
-                  <div className="flex-1" />
-                  <button
-                    onClick={() => handleAction(interview.id, 'reviewed')}
-                    disabled={isActioning}
-                    className="text-sm text-destructive hover:bg-destructive-bg px-3 py-1.5 rounded-md transition-colors disabled:opacity-50"
-                  >
-                    Archive
-                  </button>
-                  <button
-                    onClick={() => handleAction(interview.id, 'shortlisted')}
-                    disabled={isActioning}
-                    className="text-sm bg-accent text-white px-4 py-1.5 rounded-md hover:bg-accent/90 transition-colors disabled:opacity-50"
-                  >
-                    {isActioning ? 'Saving...' : 'Shortlist →'}
-                  </button>
                 </div>
               </div>
             )
-          })}
-          </div>
+          })
         )}
       </div>
 
