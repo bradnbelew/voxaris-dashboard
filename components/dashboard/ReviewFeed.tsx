@@ -82,7 +82,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
 
   return (
     <>
-      <div className="px-8 py-6 max-w-5xl mx-auto space-y-4">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 max-w-5xl mx-auto space-y-4">
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white py-28 text-center">
             <div className="h-14 w-14 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
@@ -108,16 +108,16 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
                 {/* Score accent bar */}
                 <div className={`h-1 w-full ${accent.bar}`} />
 
-                <div className="p-6">
-                  <div className="flex gap-5">
+                <div className="p-4 sm:p-6">
+                  <div className="flex gap-3 sm:gap-5">
                     {/* Score + Avatar column */}
-                    <div className="flex flex-col items-center gap-2 shrink-0 w-14 pt-0.5">
-                      <div className={`h-11 w-11 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-sm font-bold text-white`}>
+                    <div className="flex flex-col items-center gap-1.5 shrink-0 w-12 sm:w-14 pt-0.5">
+                      <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-sm font-bold text-white`}>
                         {initials}
                       </div>
                       {score !== null && (
-                        <div className={`text-center`}>
-                          <div className={`text-2xl font-bold leading-none ${accent.text}`}>{score}</div>
+                        <div className="text-center">
+                          <div className={`text-xl sm:text-2xl font-bold leading-none ${accent.text}`}>{score}</div>
                           <div className="text-[9px] text-muted leading-tight">/100</div>
                         </div>
                       )}
@@ -125,34 +125,29 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
 
                     {/* Main content */}
                     <div className="flex-1 min-w-0">
-                      {/* Name row */}
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2.5 flex-wrap">
-                            <h3 className="text-base font-semibold text-foreground leading-none">{name}</h3>
+                      {/* Name + actions row */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h3 className="text-sm sm:text-base font-semibold text-foreground leading-tight">{name}</h3>
                             <RecPill rec={interview.ai_recommendation} />
                           </div>
-                          <div className="flex items-center gap-2 mt-1 text-sm text-muted">
+                          <div className="flex items-center gap-1.5 mt-1 text-xs text-muted flex-wrap">
                             <span>{interview.applied_role ?? 'General'}</span>
                             {interview.started_at && (
                               <>
                                 <span className="text-border-strong">·</span>
-                                <span className="text-xs">
-                                  {new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </span>
+                                <span>{new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                               </>
                             )}
                             {interview.most_recent_employer && (
-                              <>
-                                <span className="text-border-strong">·</span>
-                                <span className="text-xs truncate max-w-[160px]">{interview.most_recent_employer}</span>
-                              </>
+                              <span className="hidden sm:inline truncate max-w-[140px]">· {interview.most_recent_employer}</span>
                             )}
                           </div>
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-1.5 shrink-0">
+                        {/* Actions — desktop inline, mobile below */}
+                        <div className="hidden sm:flex items-center gap-1.5 shrink-0">
                           <button
                             onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
                             className="text-xs text-muted hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-background transition-colors"
@@ -180,35 +175,59 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
 
                       {/* AI Summary */}
                       {interview.ai_summary ? (
-                        <p className="mt-3 text-sm text-foreground/80 leading-relaxed line-clamp-2">
+                        <p className="mt-2.5 text-sm text-foreground/80 leading-relaxed line-clamp-2">
                           {interview.ai_summary}
                         </p>
                       ) : (
-                        <p className="mt-3 text-sm text-muted italic">AI summary pending.</p>
+                        <p className="mt-2.5 text-sm text-muted italic">AI summary pending.</p>
                       )}
 
                       {/* Strengths + Concerns tags */}
                       {(strengths.length > 0 || concerns.length > 0) && (
-                        <div className="mt-3 flex flex-wrap gap-1.5">
+                        <div className="mt-2.5 flex flex-wrap gap-1.5">
                           {strengths.slice(0, 2).map((s, i) => (
                             <span key={i} className="inline-flex items-center gap-1 text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-full px-2.5 py-0.5">
                               <CheckCircle className="h-3 w-3 shrink-0" />
-                              <span className="truncate max-w-[220px]">{s}</span>
+                              <span className="truncate max-w-[160px] sm:max-w-[220px]">{s}</span>
                             </span>
                           ))}
                           {concerns.slice(0, 1).map((c, i) => (
                             <span key={i} className="inline-flex items-center gap-1 text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-100 rounded-full px-2.5 py-0.5">
-                              <span className="truncate max-w-[220px]">{c}</span>
+                              <span className="truncate max-w-[160px] sm:max-w-[220px]">{c}</span>
                             </span>
                           ))}
                         </div>
                       )}
 
                       {/* Score bars */}
-                      <div className="mt-4 flex gap-5">
+                      <div className="mt-3 flex gap-3 sm:gap-5">
                         <MiniBar label="Engagement" value={interview.engagement_score} />
                         <MiniBar label="Professional" value={interview.professional_score} />
-                        <MiniBar label="Fit Score" value={interview.ai_fit_score} />
+                        <MiniBar label="Fit" value={interview.ai_fit_score} />
+                      </div>
+
+                      {/* Mobile actions */}
+                      <div className="sm:hidden mt-3 pt-3 border-t border-border flex items-center gap-2">
+                        <button
+                          onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
+                          className="flex-1 text-xs text-muted hover:text-foreground border border-border rounded-lg px-3 py-2 hover:bg-background transition-colors text-center"
+                        >
+                          View Profile
+                        </button>
+                        <button
+                          onClick={() => handleAction(interview.id, 'reviewed')}
+                          disabled={isActioning}
+                          className="flex-1 text-xs text-destructive border border-destructive/30 rounded-lg px-3 py-2 hover:bg-destructive-bg transition-colors disabled:opacity-50 text-center"
+                        >
+                          Archive
+                        </button>
+                        <button
+                          onClick={() => handleAction(interview.id, 'shortlisted')}
+                          disabled={isActioning}
+                          className="flex-1 text-xs font-semibold bg-accent text-white rounded-lg px-3 py-2 hover:bg-accent/90 transition-colors disabled:opacity-50 text-center"
+                        >
+                          {isActioning ? 'Saving…' : 'Shortlist'}
+                        </button>
                       </div>
                     </div>
                   </div>

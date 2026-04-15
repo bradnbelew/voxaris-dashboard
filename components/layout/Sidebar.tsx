@@ -23,9 +23,7 @@ function LogoMark() {
       <img
         src="/logo.png"
         alt="Voxaris AI"
-        width={148}
-        height={48}
-        className="object-contain object-left h-10 w-auto"
+        className="h-14 w-auto object-contain object-left max-w-[200px]"
         onError={() => setImgFailed(true)}
       />
     )
@@ -33,15 +31,15 @@ function LogoMark() {
 
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-sm shrink-0">
-        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-sm shrink-0">
+        <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
           <path d="M2 11L7 3L12 11" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
           <path d="M4 8H10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
         </svg>
       </div>
       <div>
-        <p className="text-sm font-bold tracking-tight text-foreground leading-none">Voxaris AI</p>
-        <p className="text-[10px] text-muted mt-0.5">Hiring Intelligence</p>
+        <p className="text-base font-bold tracking-tight text-foreground leading-none">Voxaris AI</p>
+        <p className="text-[11px] text-muted mt-0.5">Hiring Intelligence</p>
       </div>
     </div>
   )
@@ -64,13 +62,13 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
 
   return (
     <aside className="fixed left-0 top-0 z-30 h-screen w-60 border-r border-border bg-white flex flex-col shadow-sm">
-      {/* Logo */}
-      <div className="flex h-16 items-center px-5 border-b border-border">
+      {/* Logo — taller header to give logo room */}
+      <div className="flex h-20 items-center px-5 border-b border-border">
         <LogoMark />
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5">
+      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
           const Icon = item.icon
@@ -79,14 +77,14 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'relative flex items-center gap-3 rounded-lg px-3 h-9 text-sm transition-colors',
+                'relative flex items-center gap-3 rounded-lg px-3 h-10 text-sm transition-colors',
                 isActive
                   ? 'bg-accent-bg text-accent font-semibold'
                   : 'text-muted hover:bg-[#f5f3ff] hover:text-foreground'
               )}
             >
               {isActive && (
-                <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-r bg-accent" />
+                <span className="absolute left-0 top-2 bottom-2 w-0.5 rounded-r bg-accent" />
               )}
               <Icon className="h-4 w-4 shrink-0" />
               {item.label}
@@ -97,7 +95,7 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
 
       {/* User */}
       <div className="border-t border-border px-4 py-3 flex items-center gap-3">
-        <div className="h-7 w-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white flex items-center justify-center text-xs font-semibold shrink-0">
+        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-white flex items-center justify-center text-xs font-semibold shrink-0">
           {userName ? userName.charAt(0).toUpperCase() : 'V'}
         </div>
         <div className="min-w-0 flex-1">
@@ -107,7 +105,7 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
         <button
           onClick={handleSignOut}
           title="Sign out"
-          className="shrink-0 text-muted hover:text-foreground transition-colors"
+          className="shrink-0 text-muted hover:text-foreground transition-colors p-1"
         >
           <LogOut className="h-4 w-4" />
         </button>

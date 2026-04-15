@@ -99,7 +99,7 @@ export default async function InterviewsPage() {
   return (
     <div className="min-h-screen">
       {/* Gradient Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-8 py-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-4 sm:px-8 py-6 sm:py-8">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -top-10 -right-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
         <div className="pointer-events-none absolute -bottom-6 left-1/3 h-32 w-32 rounded-full bg-indigo-300/20 blur-2xl" />
@@ -114,7 +114,7 @@ export default async function InterviewsPage() {
           </p>
 
           {/* Stats row */}
-          <div className="mt-6 flex flex-wrap gap-4">
+          <div className="mt-4 flex flex-wrap gap-2 sm:gap-4">
             <div className="flex items-center gap-2.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 px-4 py-2.5">
               <Users className="h-4 w-4 text-violet-200" />
               <div>
@@ -151,8 +151,8 @@ export default async function InterviewsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="px-8 py-6">
+      {/* Content */}
+      <div className="px-4 sm:px-8 py-4 sm:py-6">
         {interviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card py-24 text-center">
             <Users className="h-10 w-10 text-muted-foreground mb-3" />
@@ -160,104 +160,89 @@ export default async function InterviewsPage() {
             <p className="text-sm text-muted mt-1">Candidates will appear here once they complete an AI screening.</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-background">
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    Candidate
-                  </th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    Role
-                  </th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    Fit Score
-                  </th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    AI Recommendation
-                  </th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    Pipeline Status
-                  </th>
-                  <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">
-                    Date
-                  </th>
-                  <th className="px-5 py-3.5" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {interviews.map((interview) => {
-                  const name = interview.full_name ?? 'Unknown'
-                  const initials = getInitials(name)
-                  const gradient = getAvatarGradient(name)
-                  const date = interview.started_at
-                    ? new Date(interview.started_at).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })
-                    : '—'
-
-                  return (
-                    <tr
-                      key={interview.id}
-                      className="group transition-colors hover:bg-[#faf8ff]"
-                    >
-                      {/* Candidate */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`h-8 w-8 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-xs font-bold text-white shrink-0`}
-                          >
-                            {initials}
-                          </div>
-                          <div>
-                            <p className="font-medium text-foreground leading-tight">{name}</p>
-                            {interview.email && (
-                              <p className="text-xs text-muted truncate max-w-[180px]">{interview.email}</p>
-                            )}
-                          </div>
+          <>
+            {/* Mobile cards */}
+            <div className="sm:hidden space-y-3">
+              {interviews.map((interview) => {
+                const name = interview.full_name ?? 'Unknown'
+                const initials = getInitials(name)
+                const gradient = getAvatarGradient(name)
+                const date = interview.started_at
+                  ? new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                  : '—'
+                return (
+                  <Link key={interview.id} href={`/dashboard/interviews/${interview.id}`}>
+                    <div className="bg-white rounded-xl border border-border p-4 shadow-sm active:opacity-75">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`h-9 w-9 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-xs font-bold text-white shrink-0`}>
+                          {initials}
                         </div>
-                      </td>
-
-                      {/* Role */}
-                      <td className="px-5 py-3.5">
-                        <span className="text-foreground">{interview.applied_role ?? '—'}</span>
-                      </td>
-
-                      {/* Fit Score */}
-                      <td className="px-5 py-3.5">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground text-sm leading-tight">{name}</p>
+                          <p className="text-xs text-muted">{interview.applied_role ?? '—'} · {date}</p>
+                        </div>
                         <ScorePill score={interview.ai_fit_score} />
-                      </td>
-
-                      {/* Recommendation */}
-                      <td className="px-5 py-3.5">
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap">
                         <RecPill rec={interview.ai_recommendation} />
-                      </td>
-
-                      {/* Pipeline Status */}
-                      <td className="px-5 py-3.5">
                         <StatusPill status={interview.pipeline_status ?? 'pending_review'} />
-                      </td>
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
 
-                      {/* Date */}
-                      <td className="px-5 py-3.5 text-muted">{date}</td>
-
-                      {/* Action */}
-                      <td className="px-5 py-3.5 text-right">
-                        <Link
-                          href={`/dashboard/interviews/${interview.id}`}
-                          className="text-xs font-medium text-accent hover:text-accent/80 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          View →
-                        </Link>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+            {/* Desktop table */}
+            <div className="hidden sm:block rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-background">
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">Candidate</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">Role</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">Fit Score</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">AI Recommendation</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">Pipeline Status</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted">Date</th>
+                    <th className="px-5 py-3.5" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {interviews.map((interview) => {
+                    const name = interview.full_name ?? 'Unknown'
+                    const initials = getInitials(name)
+                    const gradient = getAvatarGradient(name)
+                    const date = interview.started_at
+                      ? new Date(interview.started_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                      : '—'
+                    return (
+                      <tr key={interview.id} className="group transition-colors hover:bg-[#faf8ff]">
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className={`h-8 w-8 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-xs font-bold text-white shrink-0`}>{initials}</div>
+                            <div>
+                              <p className="font-medium text-foreground leading-tight">{name}</p>
+                              {interview.email && <p className="text-xs text-muted truncate max-w-[180px]">{interview.email}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-foreground">{interview.applied_role ?? '—'}</td>
+                        <td className="px-5 py-3.5"><ScorePill score={interview.ai_fit_score} /></td>
+                        <td className="px-5 py-3.5"><RecPill rec={interview.ai_recommendation} /></td>
+                        <td className="px-5 py-3.5"><StatusPill status={interview.pipeline_status ?? 'pending_review'} /></td>
+                        <td className="px-5 py-3.5 text-muted">{date}</td>
+                        <td className="px-5 py-3.5 text-right">
+                          <Link href={`/dashboard/interviews/${interview.id}`} className="text-xs font-medium text-accent hover:text-accent/80 transition-colors opacity-0 group-hover:opacity-100">
+                            View →
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

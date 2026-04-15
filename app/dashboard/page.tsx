@@ -30,7 +30,7 @@ export default async function ReviewPage() {
   return (
     <div className="min-h-screen">
       {/* Gradient Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-8 py-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-4 sm:px-8 py-6 sm:py-8">
         <div className="pointer-events-none absolute -top-12 -right-12 h-56 w-56 rounded-full bg-white/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-8 left-1/4 h-40 w-40 rounded-full bg-indigo-300/20 blur-2xl" />
         <div className="pointer-events-none absolute top-4 right-1/3 h-24 w-24 rounded-full bg-fuchsia-400/10 blur-2xl" />
@@ -44,7 +44,7 @@ export default async function ReviewPage() {
             </p>
           </div>
 
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-2 sm:gap-3 flex-wrap mt-4 sm:mt-0">
             <div className="flex items-center gap-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 px-5 py-3">
               <Inbox className="h-4 w-4 text-violet-200 shrink-0" />
               <div>
