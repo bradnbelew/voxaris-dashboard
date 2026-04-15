@@ -82,7 +82,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
 
   return (
     <>
-      <div className="px-4 sm:px-8 py-4 sm:py-6 max-w-5xl mx-auto space-y-4">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 space-y-4">
         {sorted.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-white py-28 text-center">
             <div className="h-14 w-14 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
@@ -104,7 +104,11 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
             const concerns: string[] = interview.ai_concerns ?? []
 
             return (
-              <div key={interview.id} className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden transition-all hover:shadow-md">
+              <div
+                key={interview.id}
+                className="group bg-white rounded-2xl border border-border shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-accent/30 cursor-pointer"
+                onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
+              >
                 {/* Score accent bar */}
                 <div className={`h-1 w-full ${accent.bar}`} />
 
@@ -147,27 +151,21 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
                         </div>
 
                         {/* Actions — desktop inline, mobile below */}
-                        <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                        <div className="hidden sm:flex items-center gap-2 shrink-0">
                           <button
-                            onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
-                            className="text-xs text-muted hover:text-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-background transition-colors"
-                          >
-                            View Profile
-                          </button>
-                          <button
-                            onClick={() => handleAction(interview.id, 'reviewed')}
+                            onClick={(e) => { e.stopPropagation(); handleAction(interview.id, 'reviewed') }}
                             disabled={isActioning}
                             title="Archive"
-                            className="h-8 w-8 flex items-center justify-center rounded-lg border border-border text-muted hover:text-destructive hover:border-destructive/40 hover:bg-destructive-bg transition-colors disabled:opacity-50"
+                            className="h-9 w-9 flex items-center justify-center rounded-lg border border-border text-muted hover:text-destructive hover:border-destructive/40 hover:bg-destructive-bg transition-colors disabled:opacity-50"
                           >
                             <X className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => handleAction(interview.id, 'shortlisted')}
+                            onClick={(e) => { e.stopPropagation(); handleAction(interview.id, 'shortlisted') }}
                             disabled={isActioning}
-                            className="flex items-center gap-1.5 text-xs font-semibold bg-accent text-white rounded-lg px-3 py-1.5 hover:bg-accent/90 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 text-sm font-semibold bg-accent text-white rounded-xl px-4 py-2 hover:bg-accent/90 transition-colors disabled:opacity-50 shadow-sm"
                           >
-                            <CheckCheck className="h-3.5 w-3.5" />
+                            <CheckCheck className="h-4 w-4" />
                             {isActioning ? 'Saving…' : 'Shortlist'}
                           </button>
                         </div>
@@ -206,26 +204,26 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
                         <MiniBar label="Fit" value={interview.ai_fit_score} />
                       </div>
 
+                      {/* Desktop: open profile hint */}
+                      <p className="hidden sm:block mt-3 text-xs text-accent font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        Click anywhere to open profile →
+                      </p>
+
                       {/* Mobile actions */}
                       <div className="sm:hidden mt-3 pt-3 border-t border-border flex items-center gap-2">
                         <button
-                          onClick={() => { setDrawerInterview(interview); setDrawerOpen(true) }}
-                          className="flex-1 text-xs text-muted hover:text-foreground border border-border rounded-lg px-3 py-2 hover:bg-background transition-colors text-center"
+                          onClick={(e) => { e.stopPropagation(); handleAction(interview.id, 'reviewed') }}
+                          disabled={isActioning}
+                          className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-xl border border-border text-muted hover:text-destructive hover:border-destructive/40 hover:bg-destructive-bg transition-colors disabled:opacity-50"
                         >
-                          View Profile
+                          <X className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleAction(interview.id, 'reviewed')}
+                          onClick={(e) => { e.stopPropagation(); handleAction(interview.id, 'shortlisted') }}
                           disabled={isActioning}
-                          className="flex-1 text-xs text-destructive border border-destructive/30 rounded-lg px-3 py-2 hover:bg-destructive-bg transition-colors disabled:opacity-50 text-center"
+                          className="flex-1 flex items-center justify-center gap-2 text-sm font-semibold bg-accent text-white rounded-xl px-4 py-2.5 hover:bg-accent/90 transition-colors disabled:opacity-50"
                         >
-                          Archive
-                        </button>
-                        <button
-                          onClick={() => handleAction(interview.id, 'shortlisted')}
-                          disabled={isActioning}
-                          className="flex-1 text-xs font-semibold bg-accent text-white rounded-lg px-3 py-2 hover:bg-accent/90 transition-colors disabled:opacity-50 text-center"
-                        >
+                          <CheckCheck className="h-4 w-4" />
                           {isActioning ? 'Saving…' : 'Shortlist'}
                         </button>
                       </div>

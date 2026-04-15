@@ -53,7 +53,7 @@ export function DashboardShell({ children, userName, orgName }: DashboardShellPr
   return (
     <div className="flex min-h-screen bg-background">
 
-      {/* ── Desktop sidebar ─────────────────────────────────── */}
+      {/* ── Desktop sidebar ─────────────────────────────────────── */}
       <div className="hidden lg:block">
         <Sidebar userName={userName} orgName={orgName} />
       </div>
@@ -91,7 +91,7 @@ export function DashboardShell({ children, userName, orgName }: DashboardShellPr
       </header>
 
       {/* ── Main content ─────────────────────────────────────── */}
-      <main className="flex-1 lg:ml-60 min-h-screen pt-14 lg:pt-0">
+      <main className="flex-1 lg:ml-64 min-h-screen pt-14 lg:pt-0">
         {children}
       </main>
 
