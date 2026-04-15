@@ -1,7 +1,7 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Inbox, Columns2, Briefcase, BarChart2, Settings, LogOut, List } from 'lucide-react'
@@ -14,6 +14,38 @@ const navItems = [
   { href: '/dashboard/proof', label: 'Analytics', icon: BarChart2 },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
+
+function LogoMark() {
+  const [imgFailed, setImgFailed] = useState(false)
+
+  if (!imgFailed) {
+    return (
+      <img
+        src="/logo.png"
+        alt="Voxaris AI"
+        width={148}
+        height={48}
+        className="object-contain object-left h-10 w-auto"
+        onError={() => setImgFailed(true)}
+      />
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 shadow-sm shrink-0">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+          <path d="M2 11L7 3L12 11" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M4 8H10" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <p className="text-sm font-bold tracking-tight text-foreground leading-none">Voxaris AI</p>
+        <p className="text-[10px] text-muted mt-0.5">Hiring Intelligence</p>
+      </div>
+    </div>
+  )
+}
 
 interface SidebarProps {
   userName?: string | null
@@ -34,14 +66,7 @@ export function Sidebar({ userName, orgName }: SidebarProps) {
     <aside className="fixed left-0 top-0 z-30 h-screen w-60 border-r border-border bg-white flex flex-col shadow-sm">
       {/* Logo */}
       <div className="flex h-16 items-center px-5 border-b border-border">
-        <Image
-          src="/logo.png"
-          alt="Voxaris AI"
-          width={148}
-          height={48}
-          className="object-contain object-left"
-          priority
-        />
+        <LogoMark />
       </div>
 
       {/* Nav */}
