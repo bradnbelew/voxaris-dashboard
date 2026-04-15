@@ -52,11 +52,17 @@ export default async function ProofPage() {
     : 'Complete your first interviews to start seeing ROI metrics here.'
 
   return (
-    <div className="p-8 space-y-8 max-w-4xl">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Proof</h1>
-        <p className="text-sm text-muted mt-1">The ROI screen. Show this at every 30-day review.</p>
+    <div className="min-h-screen">
+      <div className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 px-8 py-8">
+        <div className="pointer-events-none absolute -top-10 -right-10 h-48 w-48 rounded-full bg-white/10 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-6 left-1/3 h-32 w-32 rounded-full bg-indigo-300/20 blur-2xl" />
+        <div className="relative">
+          <p className="text-xs font-semibold uppercase tracking-widest text-violet-200 mb-1">ROI Dashboard</p>
+          <h1 className="text-2xl font-bold text-white">Proof</h1>
+          <p className="mt-1 text-sm text-violet-200">The ROI screen. Show this at every 30-day review.</p>
+        </div>
       </div>
+    <div className="p-8 space-y-8 max-w-4xl">
 
       {/* Time & Cost Saved */}
       <div className="grid grid-cols-2 gap-6">
@@ -106,6 +112,7 @@ export default async function ProofPage() {
       <div className="rounded-xl border border-accent/20 bg-accent-bg px-6 py-4">
         <p className="text-sm font-medium text-accent">{insightSentence}</p>
       </div>
+    </div>
     </div>
   )
 }

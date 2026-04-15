@@ -80,13 +80,13 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
   return (
     <>
       {/* Status bar */}
-      <div className="flex items-center gap-6 px-8 py-4 border-b border-border bg-card sticky top-0 z-10">
+      <div className="flex items-center gap-6 px-8 py-3.5 border-b border-border bg-white sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-accent animate-pulse" />
           <span className="text-sm font-medium text-foreground">{interviews.length} candidate{interviews.length !== 1 ? 's' : ''} to review</span>
         </div>
         {avgScore > 0 && (
-          <span className="text-sm text-muted">Avg score: <span className="font-medium text-foreground">{avgScore}</span></span>
+          <span className="text-sm text-muted">Avg score: <span className="font-semibold text-foreground">{avgScore}</span></span>
         )}
         <div className="flex items-center gap-1.5 text-sm text-success ml-auto">
           <Clock className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function ReviewFeed({ interviews: initial }: ReviewFeedProps) {
             const isActioning = actioning === interview.id
 
             return (
-              <div key={interview.id} className="rounded-xl border border-border bg-card shadow-sm p-6 space-y-4 transition-all">
+              <div key={interview.id} className="rounded-2xl border border-border bg-card shadow-sm p-6 space-y-4 transition-all hover:shadow-md">
                 {/* Header row */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3">
