@@ -1,6 +1,7 @@
 import { getRecommendationLabel, getRecommendationColor } from '@/lib/utils'
 import type { AIRecommendation } from '@/lib/types'
 import { Sparkles } from 'lucide-react'
+import { RerunAnalysisButton } from './RerunAnalysisButton'
 
 interface AISummaryProps {
   summary: string | null
@@ -8,10 +9,13 @@ interface AISummaryProps {
   concerns: string[] | null
   recommendation: AIRecommendation | null
   transcriptSummary: string | null
+  interviewId: string
+  userRole: 'admin' | 'recruiter' | 'viewer' | 'super_admin'
 }
 
-export function AISummary({ summary, strengths, concerns, recommendation, transcriptSummary }: AISummaryProps) {
+export function AISummary({ summary, strengths, concerns, recommendation, transcriptSummary, interviewId, userRole }: AISummaryProps) {
   const hasData = summary || strengths?.length || concerns?.length
+  const canRerun = userRole === 'admin' || userRole === 'recruiter' || userRole === 'super_admin'
 
   return (
     <div className="rounded border border-border bg-card p-4 space-y-4">
@@ -20,11 +24,14 @@ export function AISummary({ summary, strengths, concerns, recommendation, transc
           <Sparkles className="h-4 w-4 text-muted" />
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">AI Analysis</h2>
         </div>
-        {recommendation && (
-          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getRecommendationColor(recommendation)}`}>
-            {getRecommendationLabel(recommendation)}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {recommendation && (
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getRecommendationColor(recommendation)}`}>
+              {getRecommendationLabel(recommendation)}
+            </span>
+          )}
+          {canRerun && <RerunAnalysisButton interviewId={interviewId} />}
+        </div>
       </div>
 
       {!hasData && (

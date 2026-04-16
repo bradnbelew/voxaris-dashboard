@@ -134,7 +134,10 @@ export default async function InterviewDetailPage({
 
         {/* Right col — AI summary + transcript + notes */}
         <div className="space-y-6 lg:col-span-2">
-          <RecordingPlayer recordingUrl={interview.recording_url} />
+          <RecordingPlayer
+            interviewId={interview.id}
+            hasRecording={!!(interview.recording_url || interview.recording_s3_key)}
+          />
 
           <AISummary
             summary={interview.ai_summary}
@@ -142,6 +145,8 @@ export default async function InterviewDetailPage({
             concerns={interview.ai_concerns}
             recommendation={interview.ai_recommendation}
             transcriptSummary={interview.transcript_summary}
+            interviewId={interview.id}
+            userRole={profile?.role ?? 'viewer'}
           />
 
           {interview.guardrail_events && (interview.guardrail_events as any[]).length > 0 && (
