@@ -56,7 +56,7 @@ export async function POST(
   })
 
   if (!result) {
-    return Response.json({ error: 'AI summary generation failed. Check ANTHROPIC_API_KEY.' }, { status: 500 })
+    return Response.json({ error: 'AI summary generation failed. Check HF_TOKEN.' }, { status: 500 })
   }
 
   const { error: updateError } = await supabase
