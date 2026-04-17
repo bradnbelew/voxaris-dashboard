@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
 import { getOrgUsage } from '@/lib/billing'
 import { BILLING_TIERS } from '@/lib/billing-tiers'
-import { BillingActions } from '@/components/dashboard/BillingActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,9 +36,9 @@ export default async function BillingPage() {
   return (
     <div className="p-8 space-y-8 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Billing</h1>
+        <h1 className="text-2xl font-bold text-foreground">Plan &amp; Usage</h1>
         <p className="text-sm text-muted mt-1">
-          Manage your plan and track AI interview minutes.
+          Your current plan details and AI interview minute usage.
         </p>
       </div>
 
@@ -140,11 +139,21 @@ export default async function BillingPage() {
         )}
       </section>
 
-      {/* Actions */}
-      <BillingActions
-        hasSubscription={!!usage.stripeSubscriptionId}
-        currentPlan={usage.planLabel}
-      />
+      {/* Manage plan CTA */}
+      <section className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-3">
+        <h2 className="text-sm font-semibold text-foreground">Upgrade or Change Plan</h2>
+        <p className="text-sm text-muted">
+          View all available plans and start or change your subscription on our website.
+        </p>
+        <a
+          href="https://voxaris.io/pricing"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-lg bg-accent text-white px-4 py-2 text-sm font-medium hover:bg-accent/90 transition-colors"
+        >
+          View pricing &amp; plans →
+        </a>
+      </section>
 
       {/* Available plans */}
       <section className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">

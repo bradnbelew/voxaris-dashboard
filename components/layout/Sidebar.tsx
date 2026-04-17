@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { Inbox, Columns2, Briefcase, BarChart2, Settings, LogOut, List, CreditCard } from 'lucide-react'
+import { Inbox, Columns2, Briefcase, BarChart2, Settings, LogOut, List, Package } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Review', icon: Inbox, exact: true },
@@ -12,7 +12,7 @@ const navItems = [
   { href: '/dashboard/pipeline', label: 'Pipeline', icon: Columns2 },
   { href: '/dashboard/roles', label: 'Roles', icon: Briefcase },
   { href: '/dashboard/proof', label: 'Analytics', icon: BarChart2 },
-  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
+  { href: '/dashboard/billing', label: 'Products', icon: Package },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
