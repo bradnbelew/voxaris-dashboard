@@ -1,18 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isSuperAdmin } from '@/lib/supabase/is-super-admin'
 import { NextRequest } from 'next/server'
-
-async function isSuperAdmin(): Promise<boolean> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  return profile?.role === 'super_admin'
-}
 
 export async function PATCH(
   request: NextRequest,

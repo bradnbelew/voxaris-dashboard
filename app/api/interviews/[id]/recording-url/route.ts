@@ -1,3 +1,5 @@
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
 import { NextRequest } from 'next/server'
@@ -16,7 +18,6 @@ export async function GET(
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Get the user's org and validate the interview belongs to it
   const orgId = await getOrgId()
   if (!orgId) {
     return Response.json({ error: 'No organization found for user' }, { status: 403 })
@@ -26,7 +27,7 @@ export async function GET(
     .from('interviews')
     .select('recording_url, recording_s3_key, organization_id')
     .eq('id', params.id)
-    .eq('organization_id', orgId) // ensures user can only access their org's recordings
+    .eq('organization_id', orgId)
     .single()
 
   if (error || !interview) {
@@ -37,11 +38,28 @@ export async function GET(
     return Response.json({ error: 'No recording available' }, { status: 404 })
   }
 
-  if (interview.recording_url) {
-    return Response.json({ url: interview.recording_url })
+  // Generate a signed URL if we have an S3 key
+  if (interview.recording_s3_key) {
+    const s3 = new S3Client({
+      region: process.env.AWS_REGION!,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+      },
+    })
+
+    const url = await getSignedUrl(
+      s3,
+      new GetObjectCommand({
+        Bucket: process.env.AWS_S3_RECORDING_BUCKET!,
+        Key: interview.recording_s3_key,
+      }),
+      { expiresIn: 3600 } // 1 hour
+    )
+
+    return Response.json({ url })
   }
 
-  return Response.json({
-    error: 'S3 signed URL generation requires AWS SDK configuration',
-  }, { status: 501 })
+  // Fallback: use the direct URL if no S3 key
+  return Response.json({ url: interview.recording_url })
 }

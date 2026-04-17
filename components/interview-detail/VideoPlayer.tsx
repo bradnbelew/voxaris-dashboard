@@ -1,27 +1,40 @@
 'use client'
-import { useRef, useState } from 'react'
-import { Video, Download } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Video, Download, Loader2 } from 'lucide-react'
 
 interface VideoPlayerProps {
-  recordingUrl: string | null
+  interviewId: string
   candidateName: string
 }
 
-export function VideoPlayer({ recordingUrl, candidateName }: VideoPlayerProps) {
+export function VideoPlayer({ interviewId, candidateName }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [playing, setPlaying] = useState(false)
+  const [url, setUrl] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-  if (!recordingUrl) {
-    return (
-      <div className="rounded border border-border bg-card p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Video className="h-4 w-4 text-muted" />
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">Interview Recording</h2>
-        </div>
-        <p className="text-sm text-muted italic">Recording will appear here once processing is complete.</p>
-      </div>
-    )
-  }
+  useEffect(() => {
+    let cancelled = false
+
+    async function fetchUrl() {
+      try {
+        const res = await fetch(`/api/interviews/${interviewId}/recording-url`)
+        if (!res.ok) {
+          if (!cancelled) setError(true)
+          return
+        }
+        const data = await res.json()
+        if (!cancelled) setUrl(data.url ?? null)
+      } catch {
+        if (!cancelled) setError(true)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    fetchUrl()
+    return () => { cancelled = true }
+  }, [interviewId])
 
   return (
     <div className="rounded border border-border bg-card overflow-hidden">
@@ -30,27 +43,43 @@ export function VideoPlayer({ recordingUrl, candidateName }: VideoPlayerProps) {
           <Video className="h-4 w-4 text-muted" />
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted">Interview Recording</h2>
         </div>
-        <a
-          href={recordingUrl}
-          download={`${candidateName.replace(/\s+/g, '-')}-interview.mp4`}
-          className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors"
-        >
-          <Download className="h-3.5 w-3.5" />
-          Download
-        </a>
+        {url && (
+          <a
+            href={url}
+            download={`${candidateName.replace(/\s+/g, '-')}-interview.mp4`}
+            className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors"
+          >
+            <Download className="h-3.5 w-3.5" />
+            Download
+          </a>
+        )}
       </div>
-      <div className="relative bg-black aspect-video">
-        <video
-          ref={videoRef}
-          src={recordingUrl}
-          className="w-full h-full object-contain"
-          onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
-          onEnded={() => setPlaying(false)}
-          controls
-          playsInline
-        />
-      </div>
+
+      {loading && (
+        <div className="flex items-center justify-center aspect-video bg-black/5">
+          <Loader2 className="h-6 w-6 animate-spin text-muted" />
+        </div>
+      )}
+
+      {!loading && (error || !url) && (
+        <div className="flex items-center justify-center aspect-video bg-black/5">
+          <p className="text-sm text-muted italic">
+            {error ? 'Recording unavailable.' : 'Recording will appear here once processing is complete.'}
+          </p>
+        </div>
+      )}
+
+      {!loading && url && (
+        <div className="relative bg-black aspect-video">
+          <video
+            ref={videoRef}
+            src={url}
+            className="w-full h-full object-contain"
+            controls
+            playsInline
+          />
+        </div>
+      )}
     </div>
   )
 }

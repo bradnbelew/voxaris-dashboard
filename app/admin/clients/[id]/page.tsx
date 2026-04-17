@@ -167,7 +167,7 @@ export default async function ClientDetailPage({ params }: PageProps) {
                   <td className="px-6 py-3 text-right">
                     {token.active && (
                       <CopyLinkButton
-                        url={`${agentBaseUrl}/staffing?client=${token.token}`}
+                        url={`${agentBaseUrl}/apply?client=${token.token}`}
                         label="Copy Interview Link"
                       />
                     )}

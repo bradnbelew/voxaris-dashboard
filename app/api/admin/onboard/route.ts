@@ -1,19 +1,7 @@
 import { type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isSuperAdmin } from '@/lib/supabase/is-super-admin'
 import { randomBytes } from 'crypto'
-
-async function isSuperAdmin(): Promise<boolean> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-  return profile?.role === 'super_admin'
-}
 
 export async function POST(request: NextRequest) {
   if (!(await isSuperAdmin())) {
@@ -68,8 +56,8 @@ export async function POST(request: NextRequest) {
     }
   )
 
-  const agentUrl = process.env.NEXT_PUBLIC_VIDEO_AGENT_URL || 'https://your-agent-url.vercel.app'
-  const interviewLink = `${agentUrl}/staffing?client=${token}`
+  const agentUrl = process.env.NEXT_PUBLIC_VIDEO_AGENT_URL || 'https://voxaris-video-agent.vercel.app'
+  const interviewLink = `${agentUrl}/apply?client=${token}`
 
   return Response.json({
     ok: true,

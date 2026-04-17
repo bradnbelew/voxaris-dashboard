@@ -1,15 +1,7 @@
 import { type NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { isSuperAdmin } from '@/lib/supabase/is-super-admin'
 import { randomBytes } from 'crypto'
-
-async function isSuperAdmin(): Promise<boolean> {
-  const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return false
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  return profile?.role === 'super_admin'
-}
 
 export async function POST(request: NextRequest) {
   if (!(await isSuperAdmin())) return Response.json({ error: 'Forbidden' }, { status: 403 })
