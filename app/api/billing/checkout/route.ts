@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getOrgId } from '@/lib/supabase/get-org-id'
-import { stripe, BILLING_TIERS, PlanKey } from '@/lib/stripe'
+import { stripe, TIER_PRICE_IDS, PlanKey } from '@/lib/stripe'
+import { BILLING_TIERS } from '@/lib/billing-tiers'
 
 export async function POST(req: NextRequest) {
   const supabase = createClient()
@@ -14,7 +15,8 @@ export async function POST(req: NextRequest) {
 
   const { plan } = await req.json() as { plan: PlanKey }
   const tier = BILLING_TIERS[plan]
-  if (!tier) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
+  const priceIds = TIER_PRICE_IDS[plan]
+  if (!tier || !priceIds) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 })
 
   const admin = createAdminClient()
   const { data: org } = await admin
@@ -28,13 +30,12 @@ export async function POST(req: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const lineItems: { price: string; quantity?: number }[] = [
-    { price: tier.flatPriceId, quantity: 1 },
-    { price: tier.overagePriceId },
+    { price: priceIds.flatPriceId, quantity: 1 },
+    { price: priceIds.overagePriceId },
   ]
 
-  // Add one-time setup fee if configured for this tier
-  if (tier.setupFeeId) {
-    lineItems.push({ price: tier.setupFeeId, quantity: 1 })
+  if (priceIds.setupFeeId) {
+    lineItems.push({ price: priceIds.setupFeeId, quantity: 1 })
   }
 
   const session = await stripe.checkout.sessions.create({

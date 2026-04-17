@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
 import { getOrgUsage } from '@/lib/billing'
-import { BILLING_TIERS } from '@/lib/stripe'
+import { BILLING_TIERS } from '@/lib/billing-tiers'
 import { BillingActions } from '@/components/dashboard/BillingActions'
 
 export const dynamic = 'force-dynamic'

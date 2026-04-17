@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BILLING_TIERS, PlanKey } from '@/lib/stripe'
+import { BILLING_TIERS, PlanKey } from '@/lib/billing-tiers'
 
 interface BillingActionsProps {
   hasSubscription: boolean
