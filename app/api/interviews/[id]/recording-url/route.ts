@@ -10,18 +10,11 @@ export async function GET(
 ) {
   const supabase = createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const orgId = await getOrgId()
-  if (!orgId) {
-    return Response.json({ error: 'No organization found for user' }, { status: 403 })
-  }
+  if (!orgId) return Response.json({ error: 'No organization found for user' }, { status: 403 })
 
   const { data: interview, error } = await supabase
     .from('interviews')
@@ -38,7 +31,7 @@ export async function GET(
     return Response.json({ error: 'No recording available' }, { status: 404 })
   }
 
-  // Generate a signed URL if we have an S3 key
+  // If we have an S3 key, generate a signed URL
   if (interview.recording_s3_key) {
     const s3 = new S3Client({
       region: process.env.AWS_REGION!,

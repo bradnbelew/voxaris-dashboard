@@ -1,7 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getOrgId } from '@/lib/supabase/get-org-id'
-import { VideoPlayer } from '@/components/interview-detail/VideoPlayer'
 import { PipelineActions } from '@/components/interview-detail/PipelineActions'
 import { ScoreCards } from '@/components/interview-detail/ScoreCards'
 import { AISummary } from '@/components/interview-detail/AISummary'
@@ -10,6 +9,7 @@ import { ScreeningData } from '@/components/interview-detail/ScreeningData'
 import { TranscriptView } from '@/components/interview-detail/TranscriptView'
 import { GuardrailEvents } from '@/components/interview-detail/GuardrailEvents'
 import { InterviewNotes } from '@/components/interview-detail/InterviewNotes'
+import { RecordingPlayer } from '@/components/interview-detail/RecordingPlayer'
 import {
   getStatusColor,
   getPipelineColor,
@@ -64,9 +64,9 @@ export default async function InterviewDetailPage({
     : 'General'
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 sm:px-8 py-6 space-y-6">
       {/* Back + Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <Link
             href="/dashboard/interviews"
@@ -134,13 +134,19 @@ export default async function InterviewDetailPage({
 
         {/* Right col — AI summary + transcript + notes */}
         <div className="space-y-6 lg:col-span-2">
-          <VideoPlayer recordingUrl={interview.recording_url} candidateName={candidate?.full_name ?? 'Candidate'} />
+          <RecordingPlayer
+            interviewId={interview.id}
+            hasRecording={!!(interview.recording_url || interview.recording_s3_key)}
+          />
+
           <AISummary
             summary={interview.ai_summary}
             strengths={interview.ai_strengths}
             concerns={interview.ai_concerns}
             recommendation={interview.ai_recommendation}
             transcriptSummary={interview.transcript_summary}
+            interviewId={interview.id}
+            userRole={profile?.role ?? 'viewer'}
           />
 
           {interview.guardrail_events && (interview.guardrail_events as any[]).length > 0 && (

@@ -12,6 +12,7 @@ interface SummaryInput {
   available_weekends: boolean | null
   disqualified: boolean
   disqualification_reason: string | null
+  resume_text?: string | null
 }
 
 interface SummaryOutput {
@@ -26,8 +27,8 @@ interface SummaryOutput {
 export async function generateInterviewSummary(
   input: SummaryInput
 ): Promise<SummaryOutput | null> {
-  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY
-  if (!apiKey) {
+  const hasKey = process.env.HF_TOKEN || process.env.OPENAI_API_KEY
+  if (!hasKey) {
     console.warn('No AI API key configured, skipping summary generation')
     return null
   }
@@ -47,7 +48,10 @@ CERTIFICATIONS: ${input.certifications?.join(', ') || 'None'}
 AVAILABILITY: Evenings: ${input.available_evenings ?? 'Unknown'}, Weekends: ${input.available_weekends ?? 'Unknown'}
 DISQUALIFIED: ${input.disqualified}${input.disqualification_reason ? ` (${input.disqualification_reason})` : ''}
 
-PERCEPTION DATA:
+${input.resume_text ? `RESUME (extracted from uploaded PDF):
+${input.resume_text.slice(0, 3000)}${input.resume_text.length > 3000 ? '\n[resume truncated for brevity]' : ''}
+
+` : ''}PERCEPTION DATA:
 ${JSON.stringify(input.perception_analysis, null, 2)}
 
 PERCEPTION SIGNALS:
@@ -67,8 +71,8 @@ Respond in this exact JSON format (no markdown, no backticks, pure JSON only):
 }`
 
   try {
-    if (process.env.ANTHROPIC_API_KEY) {
-      return await callAnthropic(prompt)
+    if (process.env.HF_TOKEN) {
+      return await callHuggingFace(prompt)
     } else {
       return await callOpenAI(prompt)
     }
@@ -78,27 +82,39 @@ Respond in this exact JSON format (no markdown, no backticks, pure JSON only):
   }
 }
 
-async function callAnthropic(prompt: string): Promise<SummaryOutput> {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY!,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  })
+async function callHuggingFace(prompt: string): Promise<SummaryOutput> {
+  const res = await fetch(
+    'https://api-inference.huggingface.co/models/Qwen/Qwen3.5-27B/v1/chat/completions',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.HF_TOKEN}`,
+      },
+      body: JSON.stringify({
+        model: 'Qwen/Qwen3.5-27B',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a senior recruiter. Respond only with valid JSON, no markdown, no explanation. /no_think',
+          },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 1500,
+      }),
+    }
+  )
 
   if (!res.ok) {
-    throw new Error(`Anthropic API error: ${res.status}`)
+    throw new Error(`HuggingFace API error: ${res.status}`)
   }
 
   const data = await res.json()
-  const text = data.content?.[0]?.text
+  let text = data.choices?.[0]?.message?.content as string
+
+  // Strip any <think>...</think> blocks Qwen3.5 may emit in thinking mode
+  text = text?.replace(/<think>[\s\S]*?<\/think>/g, '').trim()
+
   return JSON.parse(text)
 }
 
