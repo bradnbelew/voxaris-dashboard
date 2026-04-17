@@ -77,7 +77,8 @@ export async function PATCH(
   const prevStatus = existing?.pipeline_status
 
   if (existing && newStatus !== prevStatus && (newStatus === 'shortlisted' || newStatus === 'rejected')) {
-    const candidate = existing.candidate as { full_name: string; email: string | null } | null
+    const candidateArr = existing.candidate as { full_name: string; email: string | null }[] | null
+    const candidate = Array.isArray(candidateArr) ? candidateArr[0] ?? null : (candidateArr as unknown as { full_name: string; email: string | null } | null)
     const candidateEmail = candidate?.email
     const candidateName = candidate?.full_name || 'Candidate'
     const role = existing.applied_role
