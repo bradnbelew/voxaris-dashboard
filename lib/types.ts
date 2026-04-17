@@ -163,3 +163,16 @@ export interface DashboardMetrics {
   avgEngagement: number
   pendingReview: number
 }
+
+export interface BillingUsage {
+  minutesUsed: number
+  minutesIncluded: number
+  overageMinutes: number
+  periodStart: string
+  periodEnd: string
+  planLabel: string
+  priceMonthly: number
+  overageRateCents: number
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+}
