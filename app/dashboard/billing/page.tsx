@@ -164,6 +164,9 @@ export default async function BillingPage() {
                   <p className="text-xs text-muted">
                     {tier.minutesIncluded} min/mo · overage at {formatDollars(tier.overageRateCents)}/min
                   </p>
+                  <p className="text-xs text-muted">
+                    ${tier.setupFee} one-time setup
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-bold text-foreground">${tier.priceMonthly}/mo</p>

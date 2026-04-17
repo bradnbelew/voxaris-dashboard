@@ -27,14 +27,21 @@ export async function POST(req: NextRequest) {
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
+  const lineItems: { price: string; quantity?: number }[] = [
+    { price: tier.flatPriceId, quantity: 1 },
+    { price: tier.overagePriceId },
+  ]
+
+  // Add one-time setup fee if configured for this tier
+  if (tier.setupFeeId) {
+    lineItems.push({ price: tier.setupFeeId, quantity: 1 })
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     customer: org.stripe_customer_id ?? undefined,
     customer_email: org.stripe_customer_id ? undefined : user.email,
-    line_items: [
-      { price: tier.flatPriceId, quantity: 1 },
-      { price: tier.overagePriceId },
-    ],
+    line_items: lineItems,
     metadata: {
       org_id: orgId,
       plan,
